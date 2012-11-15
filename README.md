@@ -16,6 +16,10 @@ files with the same name are found in different directories.
 
 gcmp is written in Go.
 
+## Installation
+
+	go get github.com/eglimi/gcmp
+
 ## Use Case
 
 gcmp could be useful to find images in a large, unordered set that have not yet

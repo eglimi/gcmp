@@ -2,7 +2,7 @@
 gcmp is a tool to compare files in two directories and copy new files into a
 third directory.
 */
-package gcmp
+package main
 
 import (
 	"flag"
