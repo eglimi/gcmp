@@ -5,12 +5,13 @@ third directory.
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"flag"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type FileInfoPath struct {
@@ -19,7 +20,6 @@ type FileInfoPath struct {
 }
 
 var verbose bool
-var icase bool
 
 func main() {
 
@@ -28,7 +28,6 @@ func main() {
 	var new = flag.String("new", "", "The directory with the new files")
 	var store = flag.String("out", "./file_diff", "The directory to copy the files to. Defaults to './file_diff'")
 	flag.BoolVar(&verbose, "verbose", false, "Print more information")
-	flag.BoolVar(&icase, "icase", false, "Ignore case of filenames")
 
 	flag.Parse()
 
@@ -112,18 +111,18 @@ func visit(path string, data map[string]FileInfoPath) {
 		log.Fatal(err)
 	}
 
+	hasher := sha1.New()
 	for _, fi := range fr {
 		if fi.IsDir() {
 			visit(filepath.Join(path, fi.Name()), data)
 		} else {
 			// Add file entry
-			var name string
-			if icase {
-				name = strings.ToUpper(fi.Name())
-			} else {
-				name = fi.Name()
-			}
-			data[name] = FileInfoPath{fi, path}
+			hasher.Reset()
+			f, _ := os.Open(filepath.Join(path, fi.Name()))
+			io.Copy(hasher, f)
+			f.Close()
+			hash := hex.EncodeToString(hasher.Sum(nil))
+			data[hash] = FileInfoPath{fi, path}
 		}
 	}
 }
@@ -151,4 +150,3 @@ func copyFile(destPath string, srcPath string, srcName string) {
 		log.Printf("Could not copy %v", srcFile)
 	}
 }
-
