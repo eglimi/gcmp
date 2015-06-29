@@ -11,8 +11,7 @@ gcmp traverses A with the original set of files, and B with a new set of files.
 All files in B which are not found in A are copied to C.
 
 The directory in which a file is found is irrelevant to the comparison. It only
-compares the name of a file. Therefore, it might have unwanted effects when
-files with the same name are found in different directories.
+compares the SHA1 hash of a file. 
 
 gcmp is written in Go.
 
